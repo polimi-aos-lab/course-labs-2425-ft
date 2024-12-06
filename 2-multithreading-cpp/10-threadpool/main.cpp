@@ -14,5 +14,5 @@ int main()
 {
     ThreadPool reac;
     int a,b;
-    while(cin >> a >> b) reac.pushTask(bind(&printAdd,a,b));
+    while(cin >> a >> b) reac.pushTask([=](){ printAdd(a,b); });
 }
