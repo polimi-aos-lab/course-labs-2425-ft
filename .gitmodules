@@ -1,0 +1,4 @@
+[submodule "3-embedded-rtos/miosix-kernel"]
+	path = 3-embedded-rtos/miosix-kernel
+	url = https://github.com/fedetft/miosix-kernel.git
+	branch = unstable
