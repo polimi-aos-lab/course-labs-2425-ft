@@ -10,6 +10,8 @@ public:
     SPI3DriverIrq();
 
     void send(const char *data, int size);
+    
+    ~SPI3DriverIrq();
 
     SPI3DriverIrq(const SPI3DriverIrq&) = delete;
     SPI3DriverIrq& operator= (const SPI3DriverIrq&) = delete;

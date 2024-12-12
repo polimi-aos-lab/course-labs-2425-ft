@@ -28,6 +28,12 @@ SPI3DriverIrq::SPI3DriverIrq()
     NVIC_EnableIRQ(SPI3_IRQn);
 }
 
+SPI3DriverIrq::~SPI3DriverIrq()
+{
+    NVIC_DisableIRQ(SPI3_IRQn);
+    IRQunregisterIrq(SPI3_IRQn);
+}
+
 void SPI3DriverIrq::send(const char *data, int size)
 {
     if(size <= 0) return;

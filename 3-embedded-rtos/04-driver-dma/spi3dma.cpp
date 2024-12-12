@@ -29,6 +29,12 @@ SPI3DriverDma::SPI3DriverDma()
     NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 }
 
+SPI3DriverDma::~SPI3DriverDma()
+{
+    NVIC_DisableIRQ(DMA1_Stream5_IRQn);
+    IRQunregisterIrq(DMA1_Stream5_IRQn);
+}
+
 void SPI3DriverDma::send(const char *data, int size)
 {
     if(size <= 0) return;
