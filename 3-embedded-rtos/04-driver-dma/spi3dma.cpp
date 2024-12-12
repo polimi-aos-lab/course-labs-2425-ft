@@ -31,6 +31,7 @@ SPI3DriverDma::SPI3DriverDma()
 
 void SPI3DriverDma::send(const char *data, int size)
 {
+    if(size <= 0) return;
     unique_lock<mutex> l(m);
     {
         FastInterruptDisableLock dLock;
@@ -47,7 +48,13 @@ void SPI3DriverDma::send(const char *data, int size)
         waiting = Thread::getCurrentThread();
         while(waiting) Thread::IRQenableIrqAndWait(dLock);
     }
-    while(SPI3->SR & SPI_SR_BSY) ; //Wait for last byte to be sent (with polling)
+    //Hardware-specific quirk: the DMA end of transfer interrupt in the STM32
+    //microcontroller is sent when the last byte is *beginning* to be sent, not
+    //when it has *finished* sending. This quirk only occurs when enabling DMA
+    //for send-only and would not happen if we were also receiving. To work
+    //around this quirk we use polling to wait for the last byte to be sent.
+    //When sending large buffers the impact is minimal.
+    while(SPI3->SR & SPI_SR_BSY) ;
 }
 
 void SPI3DriverDma::interruptHandler()

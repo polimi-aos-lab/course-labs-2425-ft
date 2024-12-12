@@ -2,6 +2,7 @@
 #include "spi3polling.h"
 #include <miosix.h>
 
+using namespace std;
 using namespace miosix;
 
 SPI3DriverPolling::SPI3DriverPolling()
@@ -26,6 +27,7 @@ SPI3DriverPolling::SPI3DriverPolling()
 
 void SPI3DriverPolling::send(const char *data, int size)
 {
+    unique_lock<mutex> l(m);
     for(int i = 0; i < size; i++)
     {
         SPI3->DR = data[i];
