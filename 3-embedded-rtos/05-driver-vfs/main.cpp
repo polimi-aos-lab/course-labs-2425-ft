@@ -24,16 +24,6 @@ public:
         cs.high();
         return size;
     }
-    
-    virtual ssize_t readBlock(void *buffer, size_t size, off_t where)
-    {
-        return -ENOTSUP; //Operation not supported by this driver
-    }
-    
-    virtual int ioctl(int cmd, void *arg)
-    {
-        return -ENOTSUP; //Operation not supported by this driver
-    }
 
 private:
     SPI3DriverDma spi;
