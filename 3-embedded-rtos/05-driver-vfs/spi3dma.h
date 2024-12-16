@@ -11,7 +11,7 @@ public:
 
     void send(const char *data, int size);
     
-    ~SPI3DriverDma();
+    ~SPI3DriverDma() { miosix::IRQunregisterIrq(DMA1_Stream5_IRQn); }
 
     SPI3DriverDma(const SPI3DriverDma&) = delete;
     SPI3DriverDma& operator= (const SPI3DriverDma&) = delete;

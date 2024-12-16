@@ -25,14 +25,6 @@ SPI3DriverDma::SPI3DriverDma()
               | 4<<3             //42MHz / 32 = 1.3125MHz
               | SPI_CR1_MSTR;    //Master mode
     IRQregisterIrq(DMA1_Stream5_IRQn, &SPI3DriverDma::interruptHandler, this);
-    NVIC_SetPriority(DMA1_Stream5_IRQn, 15);
-    NVIC_EnableIRQ(DMA1_Stream5_IRQn);
-}
-
-SPI3DriverDma::~SPI3DriverDma()
-{
-    NVIC_DisableIRQ(DMA1_Stream5_IRQn);
-    IRQunregisterIrq(DMA1_Stream5_IRQn);
 }
 
 void SPI3DriverDma::send(const char *data, int size)
@@ -71,8 +63,6 @@ void SPI3DriverDma::interruptHandler()
     if(waiting)
     {
         waiting->IRQwakeup();
-        if(waiting->IRQgetPriority()>Thread::IRQgetCurrentThread()->IRQgetPriority())
-            IRQinvokeScheduler();
         waiting = nullptr;
     }
 }

@@ -11,7 +11,7 @@ public:
 
     void send(const char *data, int size);
     
-    ~SPI3DriverIrq();
+    ~SPI3DriverIrq() { miosix::IRQunregisterIrq(SPI3_IRQn); }
 
     SPI3DriverIrq(const SPI3DriverIrq&) = delete;
     SPI3DriverIrq& operator= (const SPI3DriverIrq&) = delete;

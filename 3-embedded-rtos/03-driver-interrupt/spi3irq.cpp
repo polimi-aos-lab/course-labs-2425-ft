@@ -24,14 +24,6 @@ SPI3DriverIrq::SPI3DriverIrq()
               | 4<<3             //42MHz / 32 = 1.3125MHz
               | SPI_CR1_MSTR;    //Master mode
     IRQregisterIrq(SPI3_IRQn, &SPI3DriverIrq::interruptHandler, this);
-    NVIC_SetPriority(SPI3_IRQn, 15);
-    NVIC_EnableIRQ(SPI3_IRQn);
-}
-
-SPI3DriverIrq::~SPI3DriverIrq()
-{
-    NVIC_DisableIRQ(SPI3_IRQn);
-    IRQunregisterIrq(SPI3_IRQn);
 }
 
 void SPI3DriverIrq::send(const char *data, int size)
@@ -55,8 +47,6 @@ void SPI3DriverIrq::interruptHandler()
         SPI3->DR = data[index++];
     } else if(waiting) {
         waiting->IRQwakeup();
-        if(waiting->IRQgetPriority()>Thread::IRQgetCurrentThread()->IRQgetPriority())
-            IRQinvokeScheduler();
         waiting = nullptr;
     }
 }
