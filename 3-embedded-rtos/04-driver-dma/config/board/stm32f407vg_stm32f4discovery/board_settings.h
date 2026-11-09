@@ -48,29 +48,40 @@ namespace miosix {
 /// STM32F407VG only has 192KB of RAM so there is room for a big 4K stack.
 const unsigned int MAIN_STACK_SIZE=4*1024;
 
+/// Clock options
+enum class OscillatorType { HSI, HSE };
+// Supported oscillator types: HSE
+constexpr auto oscillatorType=OscillatorType::HSE;
+constexpr unsigned int hseFrequency=8000000;
+// Supported clock frequencies: 168000000, 100000000, 84000000
+// Note: at 100Mhz SDIO and RNG run at the wrong speed and USB will not work
+// because the PLL will run at 40MHz instead of 48MHz due to hardware
+// limitations 
+constexpr unsigned int cpuFrequency=168000000;
+
 /// Serial port
 /// Serial ports 1 to 6 are available
 const unsigned int defaultSerial=3;
-const unsigned int defaultSerialSpeed=19200;
+const unsigned int defaultSerialSpeed=115200;
 const bool defaultSerialFlowctrl=false;
 const bool defaultSerialDma=true;
 // Default serial 1 pins (uncomment when using serial 1)
 // Note: on this board, pins PA9-12 are in use by the user USB port, and PB6 is
 // connected to the Cirrus audio chip
-//using defaultSerialTxPin = Gpio<GPIOB_BASE,6>;
-//using defaultSerialRxPin = Gpio<GPIOB_BASE,7>;
-//using defaultSerialRtsPin = Gpio<GPIOA_BASE,12>;
-//using defaultSerialCtsPin = Gpio<GPIOA_BASE,11>;
+//using defaultSerialTxPin = Gpio<PB,6>;
+//using defaultSerialRxPin = Gpio<PB,7>;
+//using defaultSerialRtsPin = Gpio<PA,12>;
+//using defaultSerialCtsPin = Gpio<PA,11>;
 // Default serial 2 pins (uncomment when using serial 2)
-//using defaultSerialTxPin = Gpio<GPIOA_BASE,2>;
-//using defaultSerialRxPin = Gpio<GPIOA_BASE,3>;
-//using defaultSerialRtsPin = Gpio<GPIOA_BASE,1>;
-//using defaultSerialCtsPin = Gpio<GPIOA_BASE,0>;
+//using defaultSerialTxPin = Gpio<PA,2>;
+//using defaultSerialRxPin = Gpio<PA,3>;
+//using defaultSerialRtsPin = Gpio<PA,1>;
+//using defaultSerialCtsPin = Gpio<PA,0>;
 // Default serial 3 pins (uncomment when using serial 3)
-using defaultSerialTxPin = Gpio<GPIOB_BASE,10>;
-using defaultSerialRxPin = Gpio<GPIOB_BASE,11>;
-using defaultSerialRtsPin = Gpio<GPIOB_BASE,14>;
-using defaultSerialCtsPin = Gpio<GPIOB_BASE,13>;
+using defaultSerialTxPin = Gpio<PB,10>;
+using defaultSerialRxPin = Gpio<PB,11>;
+using defaultSerialRtsPin = Gpio<PB,14>;
+using defaultSerialCtsPin = Gpio<PB,13>;
 
 // Aux serial port
 // Uncomment AUX_SERIAL to enable. The device will appear as /dev/auxtty.
@@ -83,20 +94,20 @@ const bool auxSerialDma=false;
 // Default aux serial 1 pins (uncomment when using serial 1)
 // Note: on this board, pins PA9-12 are in use by the user USB port, and PB6 is
 // connected to the Cirrus audio chip
-//using auxSerialTxPin = Gpio<GPIOB_BASE,6>;
-//using auxSerialRxPin = Gpio<GPIOB_BASE,7>;
-//using auxSerialRtsPin = Gpio<GPIOA_BASE,12>;
-//using auxSerialCtsPin = Gpio<GPIOA_BASE,11>;
+//using auxSerialTxPin = Gpio<PB,6>;
+//using auxSerialRxPin = Gpio<PB,7>;
+//using auxSerialRtsPin = Gpio<PA,12>;
+//using auxSerialCtsPin = Gpio<PA,11>;
 // Default aux serial 2 pins (uncomment when using serial 2)
-using auxSerialTxPin = Gpio<GPIOA_BASE,2>;
-using auxSerialRxPin = Gpio<GPIOA_BASE,3>;
-using auxSerialRtsPin = Gpio<GPIOA_BASE,1>;
-using auxSerialCtsPin = Gpio<GPIOA_BASE,0>;
+using auxSerialTxPin = Gpio<PA,2>;
+using auxSerialRxPin = Gpio<PA,3>;
+using auxSerialRtsPin = Gpio<PA,1>;
+using auxSerialCtsPin = Gpio<PA,0>;
 // Default aux serial 3 pins (uncomment when using serial 3)
-//using auxSerialTxPin = Gpio<GPIOB_BASE,10>;
-//using auxSerialRxPin = Gpio<GPIOB_BASE,11>;
-//using auxSerialRtsPin = Gpio<GPIOB_BASE,14>;
-//using auxSerialCtsPin = Gpio<GPIOB_BASE,13>;
+//using auxSerialTxPin = Gpio<PB,10>;
+//using auxSerialRxPin = Gpio<PB,11>;
+//using auxSerialRtsPin = Gpio<PB,14>;
+//using auxSerialCtsPin = Gpio<PB,13>;
 
 //SD card driver
 static const unsigned char sdVoltage=30; //Board powered @ 3.0V
