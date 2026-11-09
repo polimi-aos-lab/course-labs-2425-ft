@@ -36,7 +36,7 @@ int main()
     
     //For simplicty we run this code in kernelspace, but vfs access can
     //cross the userspace/kernelspace barrier allowing userspace processes to
-    //access our driver
+    //access our driver. NExt example will demonstrate access from userspace
     int spifd = open("/dev/spiaos", O_RDWR);
     if(spifd < 0) return 1;
     for(;;)
