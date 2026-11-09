@@ -7,11 +7,11 @@ using namespace miosix;
 
 SPI3DriverPolling::SPI3DriverPolling()
 {
-    using sck  = Gpio<GPIOB_BASE,3>;
-    using miso = Gpio<GPIOB_BASE,4>;
-    using mosi = Gpio<GPIOB_BASE,5>;
+    using sck  = Gpio<PB,3>;
+    using miso = Gpio<PB,4>;
+    using mosi = Gpio<PB,5>;
     {
-        FastInterruptDisableLock dLock;
+        GlobalIrqLock dLock;
         sck::mode(Mode::ALTERNATE);  sck::alternateFunction(6);
         miso::mode(Mode::ALTERNATE); miso::alternateFunction(6);
         mosi::mode(Mode::ALTERNATE); mosi::alternateFunction(6);
@@ -33,5 +33,6 @@ void SPI3DriverPolling::send(const char *data, int size)
         SPI3->DR = data[i];
         while((SPI3->SR & SPI_SR_RXNE)==0) ; //Polling loop
         volatile int ignored = SPI3->DR; //"consume" received byte and ignore it
+        (void)ignored;
     }
 }

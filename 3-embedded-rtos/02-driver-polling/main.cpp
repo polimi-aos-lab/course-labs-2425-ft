@@ -9,7 +9,7 @@ using namespace miosix;
 int main()
 {
     SPI3DriverPolling spi;
-    using cs = Gpio<GPIOB_BASE,7>;
+    using cs = Gpio<PB,7>;
     cs::mode(Mode::OUTPUT); cs::high();
     for(;;)
     {

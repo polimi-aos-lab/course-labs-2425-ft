@@ -11,7 +11,7 @@ using namespace miosix;
 class SPIDevice : public Device
 {
 public:
-    SPIDevice() : Device(Device::STREAM), cs(Gpio<GPIOB_BASE,7>::getPin())
+    SPIDevice() : Device(Device::STREAM), cs(Gpio<PB,7>::getPin())
     {
         cs.mode(Mode::OUTPUT);
         cs.high();

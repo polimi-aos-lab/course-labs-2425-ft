@@ -6,17 +6,18 @@ using namespace miosix;
 
 SPI3DriverDma::SPI3DriverDma()
 {
-    using sck  = Gpio<GPIOB_BASE,3>;
-    using miso = Gpio<GPIOB_BASE,4>;
-    using mosi = Gpio<GPIOB_BASE,5>;
+    using sck  = Gpio<PB,3>;
+    using miso = Gpio<PB,4>;
+    using mosi = Gpio<PB,5>;
     {
-        FastInterruptDisableLock dLock;
+        GlobalIrqLock dLock;
         sck::mode(Mode::ALTERNATE);  sck::alternateFunction(6);
         miso::mode(Mode::ALTERNATE); miso::alternateFunction(6);
         mosi::mode(Mode::ALTERNATE); mosi::alternateFunction(6);
         RCC->AHB1ENR |= RCC_AHB1ENR_DMA1EN; //Turn on DMA1 (clock gating)
         RCC->APB1ENR |= RCC_APB1ENR_SPI3EN; //Turn on SPI3 (clock gating)
         RCC_SYNC();
+        IRQregisterIrq(dLock, DMA1_Stream5_IRQn, &SPI3DriverDma::interruptHandler, this);
     }
     SPI3->CR2 = SPI_CR2_TXDMAEN; //Enable DMA
     SPI3->CR1 = SPI_CR1_SSM      //Handle CS in software
@@ -24,7 +25,6 @@ SPI3DriverDma::SPI3DriverDma()
               | SPI_CR1_SPE      //Enable peripheral
               | 4<<3             //42MHz / 32 = 1.3125MHz
               | SPI_CR1_MSTR;    //Master mode
-    IRQregisterIrq(DMA1_Stream5_IRQn, &SPI3DriverDma::interruptHandler, this);
 }
 
 void SPI3DriverDma::send(const char *data, int size)
@@ -32,7 +32,7 @@ void SPI3DriverDma::send(const char *data, int size)
     if(size <= 0) return;
     unique_lock<mutex> l(m);
     {
-        FastInterruptDisableLock dLock;
+        GlobalIrqLock dLock;
         DMA1_Stream5->CR = 0;
         DMA1_Stream5->PAR  = reinterpret_cast<unsigned int>(&SPI3->DR);
         DMA1_Stream5->M0AR = reinterpret_cast<unsigned int>(data);
@@ -44,7 +44,7 @@ void SPI3DriverDma::send(const char *data, int size)
                          | DMA_SxCR_DMEIE //Interrupt on direct mode error
                          | DMA_SxCR_EN;   //Start DMA
         waiting = Thread::getCurrentThread();
-        while(waiting) Thread::IRQenableIrqAndWait(dLock);
+        while(waiting) Thread::IRQglobalIrqUnlockAndWait(dLock);
     }
     //Hardware-specific quirk: the DMA end of transfer interrupt in the STM32
     //microcontroller is sent when the last byte is *beginning* to be sent, not
@@ -55,8 +55,15 @@ void SPI3DriverDma::send(const char *data, int size)
     while(SPI3->SR & SPI_SR_BSY) ;
 }
 
+SPI3DriverDma::~SPI3DriverDma()
+{
+    GlobalIrqLock dLock;
+    IRQunregisterIrq(dLock, DMA1_Stream5_IRQn, &SPI3DriverDma::interruptHandler, this);
+}
+
 void SPI3DriverDma::interruptHandler()
 {
+    FastGlobalLockFromIrq dLock;
     DMA1->HIFCR = DMA_HIFCR_CTCIF5
                 | DMA_HIFCR_CTEIF5
                 | DMA_HIFCR_CDMEIF5;
