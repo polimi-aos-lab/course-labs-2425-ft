@@ -7,6 +7,6 @@ $ git submodule init
 $ git submodule update
 ```
 
-To compile the Miosix examples, download the "Latest stable" version of the compiler here
+To compile the Miosix examples, download the latest version of the compiler here
 
 https://miosix.org/wiki/index.php?title=Miosix_Toolchain
